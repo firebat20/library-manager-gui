@@ -1,0 +1,30 @@
+name: Build master
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [
+          { name: "wailsApp.exe", platform: windows/amd64, os: windows-latest },
+          { name: "wailsApp", platform: linux/amd64, os: ubuntu-latest },
+          { name: "wailsApp", platform: darwin/universal, os: macos-latest }
+        ]
+
+    runs-on: ${{ matrix.build.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dAppServer/wails-build-action@v2.2
+        with:
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
+
+

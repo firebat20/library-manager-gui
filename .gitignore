@@ -1,0 +1,8 @@
+.idea
+src/resources/app/vendor
+output
+windows.syso
+bind_*_amd64.go
+src/build/bin
+src/resources/app/node_modules
+src/resources/app/dist
