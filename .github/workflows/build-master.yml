@@ -17,19 +17,28 @@ jobs:
         ]
 
     runs-on: ${{ matrix.build.os }}
+    defaults:
+      run:
+        working-directory: ./src
     steps:
+      
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Set Platform Directory Name
+        id: platform_vars
+        shell: bash # Ensures bash is used for 'tr' command on all OSes
+        run: echo "PLATFORM_DIR_NAME=$(echo '${{ matrix.build.platform }}' | tr '/' '-')" >> $GITHUB_ENV
 
       - uses: dAppServer/wails-build-action@main
         with:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
+        # If your Wails project is in a subdirectory, remember the caveat about this action's behavior.
 
       - uses: actions/upload-artifact@v4
         with:
           name: switch-library-manager.${{ matrix.build.platform }}
-          path: D:\a\library-manager-gui\library-manager-gui/${{ matrix.build.platform }}/*
+          path: ${{ github.workspace }}/$PLATFORM_DIR_NAME/*
           if-no-files-found: error
-
