@@ -28,7 +28,7 @@ jobs:
           path: src/output/${{ matrix.build.platform }}/*
           if-no-files-found: error
           
-      - uses: dAppServer/wails-build-action@v2.2
+      - uses: dAppServer/wails-build-action@vmain
         with:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
