@@ -28,6 +28,7 @@ jobs:
 
       - name: Set Platform Directory Name
         id: platform_vars
+        working-directory: ./src
         shell: bash # Ensures bash is used for 'tr' command on all OSes
         run: echo "PLATFORM_DIR_NAME=$(echo '${{ matrix.build.platform }}' | tr '/' '-')" >> $GITHUB_ENV
 
