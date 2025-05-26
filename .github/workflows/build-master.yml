@@ -22,13 +22,13 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: dAppServer/wails-build-action@v2.2
-        with:
-          build-name: ${{ matrix.build.name }}
-          build-platform: ${{ matrix.build.platform }}
-
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: switch-library-manager.${{ matrix.build.platform }}
           path: src/output/${{ matrix.build.platform }}/*
           if-no-files-found: error
+          
+      - uses: dAppServer/wails-build-action@v2.2
+        with:
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
