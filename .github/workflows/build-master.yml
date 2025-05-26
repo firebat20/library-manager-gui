@@ -26,20 +26,48 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'src/go.mod' # Assumes go.mod is in the src directory
+          check-latest: true
+
+      - name: Get Go Cache Paths
+        id: go_cache_paths
+        shell: bash # Ensures bash is used for 'go env' on all OSes
+        run: |
+          echo "GOMODCACHE=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+          echo "GOCACHE=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+
+      - name: Cache Go Modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go_cache_paths.outputs.GOMODCACHE }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('src/go.sum') }} # Assumes go.sum is in the src directory
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      - name: Cache Go Build Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go_cache_paths.outputs.GOCACHE }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('src/go.sum') }} # Assumes go.sum is in the src directory
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
       - name: Set Platform Directory Name
         id: platform_vars
-        working-directory: ./src
         shell: bash # Ensures bash is used for 'tr' command on all OSes
         run: echo "PLATFORM_DIR_NAME=$(echo '${{ matrix.build.platform }}' | tr '/' '-')" >> $GITHUB_ENV
 
       - uses: dAppServer/wails-build-action@main
         with:
+          project-directory: src # Specifies that the Wails project is in the 'src' subdirectory
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
-        # If your Wails project is in a subdirectory, remember the caveat about this action's behavior.
 
       - uses: actions/upload-artifact@v4
         with:
           name: switch-library-manager.${{ matrix.build.platform }}
-          path: ${{ github.workspace }}/$PLATFORM_DIR_NAME/*
+          path: src/build/bin/* # Standard Wails output path when project-directory is 'src'
           if-no-files-found: error
