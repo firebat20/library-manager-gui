@@ -11,9 +11,9 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          { name: "wailsApp.exe", platform: windows/amd64, os: windows-latest },
-          { name: "wailsApp", platform: linux/amd64, os: ubuntu-latest },
-          { name: "wailsApp", platform: darwin/universal, os: macos-latest }
+          { name: "switch-library-manager.exe", platform: windows/amd64, os: windows-latest },
+          { name: "switch-library-manager", platform: linux/amd64, os: ubuntu-latest },
+          { name: "switch-library-manager", platform: darwin/universal, os: macos-latest }
         ]
 
     runs-on: ${{ matrix.build.os }}
@@ -27,7 +27,7 @@ jobs:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: switch-library-manager.${{ matrix.build.platform }}
           path: src/output/${{ matrix.build.platform }}/*
