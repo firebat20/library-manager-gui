@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: switch-library-manager.${{ matrix.build.platform }}
           path: src/output/${{ matrix.build.platform }}/*
