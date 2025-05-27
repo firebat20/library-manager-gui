@@ -17,7 +17,6 @@ jobs:
         ]
 
     runs-on: ${{ matrix.build.os }}
-    defaults:
     steps:
       
       - uses: actions/checkout@v4
@@ -27,7 +26,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod' # Assumes go.mod is in the src directory
+          go-version-file: 'go.mod' # go.mod is at the repository root
           check-latest: true
 
       - name: Get Go Cache Paths
@@ -41,7 +40,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.go_cache_paths.outputs.GOMODCACHE }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('go.sum') }} # Assumes go.sum is in the src directory
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('go.sum') }} # go.sum is at the repository root
           restore-keys: |
             ${{ runner.os }}-go-mod-
 
@@ -49,7 +48,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.go_cache_paths.outputs.GOCACHE }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('go.sum') }} # Assumes go.sum is in the src directory
+          key: ${{ runner.os }}-go-build-${{ hashFiles('go.sum') }} # go.sum is at the repository root
           restore-keys: |
             ${{ runner.os }}-go-build-
 
@@ -59,12 +58,13 @@ jobs:
         run: echo "PLATFORM_DIR_NAME=$(echo '${{ matrix.build.platform }}' | tr '/' '-')" >> $GITHUB_ENV
 
       - uses: dAppServer/wails-build-action@main
+        # Consider pinning to a specific version/SHA for stability, e.g., dAppServer/wails-build-action@v1.0.0
         with:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: switch-library-manager.${{ matrix.build.platform }}
-          path: build/bin/* # Standard Wails output path when project-directory is 'src'
+          name: switch-library-manager.${{ env.PLATFORM_DIR_NAME }} # Use sanitized platform name for artifact
+          path: build/bin/* # Standard Wails output path, relative to project root
           if-no-files-found: error
