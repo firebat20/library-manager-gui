@@ -67,4 +67,5 @@ jobs:
         with:
           name: switch-library-manager.${{ env.PLATFORM_DIR_NAME }} # Use sanitized platform name for artifact
           path: build/bin/* # Standard Wails output path, relative to project root
+          wails-build-webview2: embed
           if-no-files-found: error
